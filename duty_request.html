@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duty Request Form</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f5f7fa;
+            color: #2c3e50;
+        }
+        .request-form {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #e1e8ef;
+            border-radius: 6px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .nav-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <button onclick="window.location.href='index.html'" class="nav-btn">Back to Main</button>
+        <button onclick="window.location.href='schedule_maker.html'" class="nav-btn">View Schedule</button>
+    </div>
+    <div class="request-form">
+        <h2>Submit Duty Request</h2>
+        <input type="text" id="name" placeholder="Your Name" required>
+        <input type="date" id="startDate" required>
+        <input type="date" id="endDate" required>
+        <select id="location" required>
+            <option value="">Select Location</option>
+            <option value="MCH1">MCH1</option>
+            <option value="MCH2">MCH2</option>
+            <option value="MDH">MDH</option>
+            <option value="BAH">BAH</option>
+            <option value="MPH">MPH</option>
+        </select>
+        <button onclick="submitRequest()">Submit Request</button>
+    </div>
+
+    <script>
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function submitRequest() {
+            const name = document.getElementById('name').value;
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+            const location = document.getElementById('location').value;
+
+            if (!name || !startDate || !endDate || !location) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            // Get existing requests
+            const existingRequests = JSON.parse(localStorage.getItem('dutyRequests') || '[]');
+
+            // Add request for each day in the range
+            for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+                existingRequests.push({
+                    name: name,
+                    location: location,
+                    date: formatDate(date)
+                });
+            }
+
+            // Save to localStorage
+            localStorage.setItem('dutyRequests', JSON.stringify(existingRequests));
+
+            alert('Request submitted successfully!');
+            
+            // Ask user where to go
+            if (confirm('Would you like to view the schedule?')) {
+                window.location.href = 'schedule_maker.html';
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html> 
